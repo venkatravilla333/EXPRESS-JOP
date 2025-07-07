@@ -1,79 +1,58 @@
+// var express = require('express')
+// var morgan = require('morgan')
+// var cors = require('cors')
+// var helmet = require('helmet')
+// var helmet = require('helmet')
+// var cookieParser = require('cookie-parser')
 
+// var productRoutes = require('./routes/productsRoutes.js')
 
-var express = require('express')
+// var authMiddleware = require('./middlewares/auth.js')
 
-let app = express() //server creation
+// let app = express() //server creation
 
-app.use(express.json()) //parsing body
+// app.use(express.json()) //parsing body (Built in middleware)
+// app.use(express.urlencoded()) //parsing body (Built in middleware)
+// app.use(express.static('public')) //parsing body (Built in middleware)
+// app.use(morgan('dev'))
+// app.use(cors())
+// app.use(helmet())
+// app.use((cookieParser()))
 
+// app.use(authMiddleware)
 
-var products = [
-  {id: 1, name: 'apple', price: 200},
-  {id: 2, name: 'banana', price: 50},
-  {id: 3, name: 'grape', price: 100}
-]
+// app.use('/api/products', productRoutes)
 
-app.get('/', (req, res) => {
-  res.send('Hello Express server')
-})
+// app.get('/', (req, res) => {
+//   res.send('Hello Express server')
+// })
 
-//get all products
+// let port = process.env.PORT || 5000
 
-app.get('/api/products', (req, res) => {
-  
-  res.send(products)
-})
+// app.listen(port, () => {
+//   console.log(`Server started in port number ${port}`)
+// })
 
-//get single products
+var mongoose = require('mongoose');
 
-app.get('/api/products/:id', (req, res) => {
-  let product = products.find((product) => product.id === parseInt(req.params.id))
-  if (!product) return res.send('No product with given ID')
-  return res.send(product)
-})
+var dbURL = 'mongodb://localhost:27017';
 
-//create product
+// mongoose
+//   .connect(dbURL)
+//   .then(() => {
+//     console.log('db connected successfully');
+//   })
+//   .catch((err) => {
+//     console.log('could not connected with db');
+//   });
 
-app.post('/api/product', (req, res) => {
+async function connectWithDb() {
+ try {
+  await mongoose.connect(dbURL)
+  console.log('db connected successfully')
+ } catch (error) {
+  console.log('cloud not connect with db', error)
+ }
+}
 
-  let {name, price} = req.body
-  
-  let product = {
-    id: products.length + 1,
-    name,
-    price
-  }
-  products.push(product)
-  return res.send(products)
-})
-
-//update product
-
-app.put('/api/product/:id', (req, res) => {
-  let product = products.find((product) => product.id === parseInt(req.params.id))
-  if (!product) return res.send('No product with given ID')
-  
-  product.name = req.body.name
-  return res.send(product)
-  
-})
-
-//delete a product
-
-app.delete('/api/product/:id', (req, res) => {
-  let product = products.find((product) => product.id === parseInt(req.params.id))
-  if (!product) return res.send('No product with given ID')
-  
-  var index = products.indexOf(product)
-
-  products.splice(index, 1)
-
-  return res.send('product deleted')
-  
-})
-
-let port = process.env.PORT || 5000
-
-app.listen(port, () => {
-  console.log(`Server started in port number ${port}`)
-})
+connectWithDb()
